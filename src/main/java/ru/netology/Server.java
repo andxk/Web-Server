@@ -17,14 +17,14 @@ import java.util.concurrent.Executors;
 public class Server {
     public static final int MAX_THREADS = 64;
     public final List<String> validPaths = List.of("/index.html", "/spring.svg", "/spring.png", "/resources.html", "/styles.css", "/app.js", "/links.html", "/forms.html", "/classic.html", "/events.html", "/events.js");
-    private final int port;
+//    private final int port;
     private final ExecutorService pool = Executors.newFixedThreadPool(MAX_THREADS);
 //    final ServerSocket serverSocket;
 
 
-    public Server(int port) {
-        this.port = port;
-    }
+//    public Server(int port) {
+//        this.port = port;
+//    }
 
 
     private void clientHandler(Socket socket) {
@@ -114,14 +114,14 @@ public class Server {
 
         @Override
         public void run() {
-            System.out.println("client started");
+//            System.out.println("client started");
             clientHandler(socket);
-            System.out.println("   ---client stopped");
+//            System.out.println("   ---client stopped");
         }
     }
 
 
-    public void start() {
+    public void start(int port) {
         try (final var serverSocket = new ServerSocket(port)) {
             while (true) {
                 final var socket = serverSocket.accept();
