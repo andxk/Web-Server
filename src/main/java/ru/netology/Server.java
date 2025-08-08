@@ -73,10 +73,17 @@ public class Server {
             System.out.println("-------------------");
             System.out.println(request);
             System.out.println("===================");
+
 //            System.out.println(request.getQueryParams());
 //            System.out.println(request.getQueryParamsAndValues());
 //            System.out.println(request.getQueryParam("p2"));
 //            System.out.println(request.getQueryParam("p3"));
+//            System.out.println(request.getQueryParam("value"));
+//            System.out.println("post params");
+//            System.out.println(request.getPostParams());
+//            System.out.println(request.getPostParamsAndValues());
+//            System.out.println(request.getPostParam("title"));
+//            System.out.println(request.getPostParam("value"));
 //            System.out.println("!!!!!!!!!!!!!!!!!!!!");
 
             Handler handler = null;

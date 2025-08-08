@@ -1,15 +1,14 @@
 package ru.netology;
 
-import java.io.IOException;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
 
 
 public class HttpRequestParser {
@@ -25,35 +24,50 @@ public class HttpRequestParser {
         if (!path.startsWith("/")) return null;
 
         //Query string parse
-        List<String> paramList = new ArrayList<>();
-        try {
-//            System.out.println(path);
-            List<NameValuePair> params = URLEncodedUtils.parse(new URI(path), "UTF-8");
-
-            if (path.contains("?")) {
-                path = path.substring(0, path.indexOf("?"));
-            }
-            System.out.println(path);
-
-            for (NameValuePair param : params) {
-                String paramStr = param.getName() + "=" + param.getValue();
-//                System.out.println(paramStr);
-                paramList.add(paramStr);
-            }
-
-            System.out.println(paramList);
-
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+        List<String> paramList = extractParams(path);
+        if (path.contains("?")) {
+            path = path.substring(0, path.indexOf("?"));
         }
+        System.out.println(path);
+        System.out.println("Params: " + paramList);
         //---
 
         String version = extractVersion(firstLine);
         Map<String, String> headers = extractHeaders(lines);
         String body = extractBody(lines);
 
+        System.out.println("Post params: " + extractParams(body));
+
         return new Request(method, path, version, headers, body, paramList);
     }
+
+
+    public static List<String> extractParams(String text) {
+        List<String> paramList = new ArrayList<>();
+        if (text.isEmpty()) return paramList;
+
+        if (!text.contains("?") && !text.startsWith("/")) {
+            text = "?"+text;
+        }
+
+        List<NameValuePair> params = null;
+        try {
+            params = URLEncodedUtils.parse(new URI(text), "UTF-8");
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+//        System.out.println("text = " + text);
+
+        for (NameValuePair param : params) {
+            String paramStr = param.getName() + "=" + param.getValue();
+//                System.out.println(paramStr);
+            paramList.add(paramStr);
+        }
+
+//        System.out.println(paramList);
+        return paramList;
+    }
+
 
     private static String extractMethod(String firstLine) {
         return firstLine.split("\\s+")[0];

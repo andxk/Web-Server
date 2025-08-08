@@ -24,9 +24,10 @@ public class Request {
     public Request(String method, String path, String version, Map<String, String> headers, String body,
                    List<String> queryParamList) {
         this(method, path, version, headers, body);
-        queryParams = queryParamList.stream()
-                .filter(s -> s.contains("="))
-                .collect(Collectors.toList());
+        queryParams = queryParamList;
+//        queryParams = queryParamList.stream()
+//                .filter(s -> s.contains("="))
+//                .collect(Collectors.toList());
     }
 
 
@@ -51,24 +52,57 @@ public class Request {
     }
 
 
-    public List<String> getQueryParams() {
-        List<String> names = new ArrayList<>(queryParams.stream()
+    private List<String> paramsFromList(List<String> paramList) {
+        List<String> names = new ArrayList<>(paramList.stream()
+                .filter(s -> s.contains("="))
                 .map(s -> s.substring(0, s.indexOf("=")))
                 .collect(Collectors.toSet())
         );
         return names;
     }
 
+    private List<String> paramByName(String name, List<String> paramList) {
+        List<String> result = paramList.stream()
+                .filter(s -> s.contains(name+"="))
+                .map(s -> s.substring(name.length()+1))
+                .collect(Collectors.toList());
+        return result;
+    }
+
+
     public List<String> getQueryParamsAndValues() {
         return queryParams;
     }
 
+    public List<String> getQueryParams() {
+//        List<String> names = new ArrayList<>(queryParams.stream()
+//                .map(s -> s.substring(0, s.indexOf("=")))
+//                .collect(Collectors.toSet())
+//        );
+//        return names;
+        return paramsFromList(queryParams);
+    }
+
     public List<String> getQueryParam(String name) {
-        List<String> result = queryParams.stream()
-                .filter(s -> s.contains(name))
-                .map(s -> s.substring(name.length()+1))
-                .collect(Collectors.toList());
-        return result;
+//        List<String> result = queryParams.stream()
+//                .filter(s -> s.contains(name))
+//                .map(s -> s.substring(name.length()+1))
+//                .collect(Collectors.toList());
+//        return result;
+        return paramByName(name, queryParams);
+    }
+
+
+    public List<String> getPostParamsAndValues() {
+        return HttpRequestParser.extractParams(body);
+    }
+
+    public List<String> getPostParams() {
+        return paramsFromList(getPostParamsAndValues());
+    }
+
+    public List<String> getPostParam(String name) {
+        return paramByName(name, getPostParamsAndValues());
     }
 
 
