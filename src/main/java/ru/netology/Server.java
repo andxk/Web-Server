@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -67,12 +68,16 @@ public class Server {
             while (!in.ready()) ;
             char[] cbuf = new char[limit];
             int numChars = in.read(cbuf);
-//            System.out.println(String.copyValueOf(cbuf, 0, numChars));
 
             Request request = HttpRequestParser.parseHttpRequest(String.copyValueOf(cbuf, 0, numChars));
             System.out.println("-------------------");
             System.out.println(request);
             System.out.println("===================");
+//            System.out.println(request.getQueryParams());
+//            System.out.println(request.getQueryParamsAndValues());
+//            System.out.println(request.getQueryParam("p2"));
+//            System.out.println(request.getQueryParam("p3"));
+//            System.out.println("!!!!!!!!!!!!!!!!!!!!");
 
             Handler handler = null;
             if (request.getMethod().equals("GET")) {
@@ -88,7 +93,6 @@ public class Server {
                 handler.handle(request, out);
             } else {
                 anyRequest(request, out);
-//                    badRequest(out);
             }
 
         } catch (IOException e) {
@@ -126,6 +130,8 @@ public class Server {
         } else {
             throw new IllegalArgumentException("Method name error!");
         }
+        List<String> ls = new ArrayList<>(mapGets.keySet());
+//        System.out.println(ls);
     }
 
 

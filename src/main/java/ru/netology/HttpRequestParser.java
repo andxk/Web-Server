@@ -1,7 +1,16 @@
 package ru.netology;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
+
 
 public class HttpRequestParser {
 
@@ -9,17 +18,41 @@ public class HttpRequestParser {
         String[] lines = requestData.split("\r\n");
 
         String firstLine = lines[0].trim();
-        //todo проверить на кол-во частей ==3, если нет - вернуть нуль
+        if (firstLine.split(" ").length != 3) return null;
 
         String method = extractMethod(firstLine);
         String path = extractPath(firstLine);
-        //todo проверить начало с '/'
+        if (!path.startsWith("/")) return null;
+
+        //Query string parse
+        List<String> paramList = new ArrayList<>();
+        try {
+//            System.out.println(path);
+            List<NameValuePair> params = URLEncodedUtils.parse(new URI(path), "UTF-8");
+
+            if (path.contains("?")) {
+                path = path.substring(0, path.indexOf("?"));
+            }
+            System.out.println(path);
+
+            for (NameValuePair param : params) {
+                String paramStr = param.getName() + "=" + param.getValue();
+//                System.out.println(paramStr);
+                paramList.add(paramStr);
+            }
+
+            System.out.println(paramList);
+
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        //---
 
         String version = extractVersion(firstLine);
         Map<String, String> headers = extractHeaders(lines);
         String body = extractBody(lines);
 
-        return new Request(method, path, version, headers, body);
+        return new Request(method, path, version, headers, body, paramList);
     }
 
     private static String extractMethod(String firstLine) {
