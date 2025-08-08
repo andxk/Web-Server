@@ -25,9 +25,6 @@ public class Request {
                    List<String> queryParamList) {
         this(method, path, version, headers, body);
         queryParams = queryParamList;
-//        queryParams = queryParamList.stream()
-//                .filter(s -> s.contains("="))
-//                .collect(Collectors.toList());
     }
 
 
@@ -75,20 +72,10 @@ public class Request {
     }
 
     public List<String> getQueryParams() {
-//        List<String> names = new ArrayList<>(queryParams.stream()
-//                .map(s -> s.substring(0, s.indexOf("=")))
-//                .collect(Collectors.toSet())
-//        );
-//        return names;
         return paramsFromList(queryParams);
     }
 
     public List<String> getQueryParam(String name) {
-//        List<String> result = queryParams.stream()
-//                .filter(s -> s.contains(name))
-//                .map(s -> s.substring(name.length()+1))
-//                .collect(Collectors.toList());
-//        return result;
         return paramByName(name, queryParams);
     }
 
